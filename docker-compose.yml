@@ -1,0 +1,26 @@
+services:
+  postgres:
+    container_name: node-starter-db
+    image: postgres:14-alpine
+    ports:
+      - 5432:5432 # enables connecting locally via psql
+    environment:
+      POSTGRES_USER: prisma
+      POSTGRES_PASSWORD: prisma
+      POSTGRES_DB: dev
+
+  backend:
+    container_name: node-starter
+    build: .
+    depends_on:
+      - postgres
+    ports:
+      - 8080:8080
+      - 9229:9229 # debugger port
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    command: yarn start:docker
+    environment:
+      PORT: 8080
+      DATABASE_URL: postgresql://prisma:prisma@postgres/dev
